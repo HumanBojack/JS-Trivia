@@ -1,26 +1,28 @@
 class Game {
 	constructor(){
-		this.init();
+		this.showMenu();
 	}
 
-	async init(){
-		let questions = await this.fetchQuestions(1);
+	async init(number){
+		let questions = await this.fetchQuestions(number);
+		console.log(questions);
 		this.questions = questions.results;
 		this.score = 0;
-		this.showMenu();
+		// this.showMenu();
 	}
 
 	async fetchQuestions(number){
 
-		// return fetch(`https://opentdb.com/api.php?amount=${rounds}`)
-		// 	.then(data => data.json())
-		// 	.catch(error => console.error(error));
-		return fetch(`questions_example.json`)
+		return fetch(`https://opentdb.com/api.php?amount=${number}`)
 			.then(data => data.json())
 			.catch(error => console.error(error));
+		// return fetch(`questions_example.json`)
+		// 	.then(data => data.json())
+		// 	.catch(error => console.error(error));
 	}
 
-	play(){
+	async play(number){
+		await this.init(number);
 		this.askQuestion(this.questions[0], 1);
 	}
 
@@ -28,7 +30,7 @@ class Game {
 		let gameCard = document.querySelector(".game-card");
 		gameCard.classList.remove("menu", "question-boolean", "question-multiple");
 		gameCard.classList.add("menu");
-
+		console.log(this.score);
 		gameCard.innerHTML = 
 		`<p>How many questions do you want ?</p>
 		<select>
@@ -38,13 +40,14 @@ class Game {
 			<option>20</option>
 		</select>
 		<a href="">Play game !</a>`;
+		this.toLeft();
 
 		let playBtn = document.getElementsByTagName("a")[0];
 
 		const onPlayBtnClick = (event) => {
 			event.preventDefault();
 			let selection = document.getElementsByTagName("select")[0];
-			this.play();
+			this.play(selection.value);
 		}
 
 		playBtn.addEventListener("click", onPlayBtnClick);
@@ -71,6 +74,7 @@ class Game {
 			<p class="yes answer">${answers[0]}</p>
 			<p class="no answer">${answers[1]}</p>`;
 		let buttons = gameCard.querySelectorAll(".answer");
+		this.toLeft()
 
 		let game = this;
 
@@ -103,6 +107,7 @@ class Game {
 		<p class="third answer">${answers[2]}</p>
 		<p class="fourth answer">${answers[3]}</p>`;
 		let buttons = gameCard.querySelectorAll(".answer");
+		this.toLeft()
 
 		let game = this;
 
@@ -112,7 +117,7 @@ class Game {
 				if (question.correct_answer == this.textContent){
 					game.score += 1;
 				}
-
+				
 				if (game.questions[number]){
 					game.askQuestion(game.questions[number], number + 1);
 				} else {
@@ -123,16 +128,21 @@ class Game {
 		})
 	}
 
-
+	toLeft(){
+		anime({
+			targets: '.game-card',
+			translateX: [3000,0],
+			duration: 200,
+			easing: 'spring(1, 80, 50, 0)',
+		})
+	}
 }
 
 
 
 // let questions = await fetchQuestions(5);
 let game = new Game();
-
-
-
+game.showMenu();
 
 
 
